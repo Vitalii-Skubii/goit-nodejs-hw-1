@@ -42,8 +42,10 @@ async function getContactById(contactId) {
   // ...твой код
   try {
     const response = await fs.readFile(contactsPath);
-    let contacts = JSON.parse(response);
-    const findContact = contacts.find(({ id }) => id === contactId);
+    let contacts = await JSON.parse(response);
+    const findContact = await contacts.find(
+      ({ id }) => String(id) === String(contactId)
+    );
     return console.table(findContact);
   } catch (error) {
     console.error("contact not found");
@@ -55,7 +57,9 @@ async function removeContact(contactId) {
   try {
     const response = await fs.readFile(contactsPath);
     let contacts = JSON.parse(response);
-    const filteredContacts = contacts.filter(({ id }) => id !== contactId);
+    const filteredContacts = contacts.filter(
+      ({ id }) => String(id) !== String(contactId)
+    );
     return console.table(filteredContacts);
   } catch (error) {
     console.error("contact not found");
@@ -71,7 +75,7 @@ async function addContact(name, email, phone) {
     const contactsList = JSON.stringify([contactNew, ...contacts], null, "\t");
 
     await fs.writeFile(contactsPath, contactsList);
-    return console.table(contactsList);
+    listContacts();
   } catch (error) {
     console.error(error.message);
   }
